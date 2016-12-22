@@ -8,6 +8,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Rad301ClubsV1.Models.ClubModel;
+using PagedList;
 
 namespace Rad301ClubsV1.Controllers
 {
@@ -21,15 +22,47 @@ namespace Rad301ClubsV1.Controllers
         private ClubContext db = new ClubContext();
 
         // GET: Students
-        public async Task<ActionResult> Index(string Firstname = null, string Surname = null)
+        public async Task<ActionResult> Index(string sort, string search, int? page
+            /*string Firstname = null, string Surname = null*/)
         {
-            ViewBag.VFname = Firstname;
-            ViewBag.VSname = Surname;
-            return View(await db.Students
-                .Where(s => (Surname == null && Firstname == null) 
-                ||  s.Fname.StartsWith(Firstname) 
-                    && s.Sname.StartsWith(Surname))
-                .ToListAsync());
+            //ViewBag.VFname = Firstname;
+            //ViewBag.VSname = Surname;
+            //return View(await db.Students
+            //    .Where(s => (Surname == null && Firstname == null) 
+            //    ||  s.Fname.StartsWith(Firstname) 
+            //        && s.Sname.StartsWith(Surname))
+            //    .ToListAsync());
+            ViewBag.SnameSort = String.IsNullOrEmpty(sort) ? "sname_desc" : string.Empty;
+            ViewBag.FnameSort = sort == "fname" ? "fname_desc" : "fname";
+
+            ViewBag.CurrentSearch = search;
+            IQueryable<Student> students = db.Students;
+
+            if (!String.IsNullOrEmpty(search))
+                students =
+                    students.Where(
+                        s => s.Fname.StartsWith(search) || s.Sname.StartsWith(search));
+            switch (sort)
+            {
+
+                case "sname_desc":
+                    students = students.OrderByDescending(s => s.Sname).ThenBy(s => s.Fname);
+                    break;
+                case "fname":
+                    students = students.OrderBy(s => s.Fname).ThenBy(s => s.Sname);
+                    break;
+                case "fname_desc":
+                    students = students.OrderByDescending(s => s.Fname).ThenBy(s => s.Sname);
+                    break;
+                default:
+                    students = students.OrderBy(s => s.Sname).ThenBy(s => s.Fname);
+                    break;
+            }
+
+            int pageSize = 10;
+            int pageNumber = page ?? 1;
+
+            return View(students.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Students/Details/5

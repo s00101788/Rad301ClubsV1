@@ -7,13 +7,15 @@
 <h2>Index</h2>
 @* A form to post back to the same controller a search term *@
 <form method="get">
-    <input type="search" name="ClubName"/>
-    <input type= "submit" name="Search by Club name"/>
+    <input type="search" name="ClubName" />
+    <input type="submit" name="Search by Club name" />
 </form>
 
 <p>
-    @if (User.IsInRole("Admin"))
-    { Html.ActionLink("Create New", "Create"); }
+    @*@if (User.IsInRole("Admin"))*@
+
+    @Html.ActionLink("Create New", "Create");
+    @Html.ActionLink(" All Club Details ", "AllClubDetails");
 </p>
 <table class="table">
     <tr>
@@ -29,23 +31,24 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.ClubName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreationDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.adminID)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ClubId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ClubId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ClubId })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClubName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.adminID)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ClubId }, new { @class = "btn btn-primary btn-sm" }) 
+                @Html.ActionLink("Details", "Details", new { id = item.ClubId }, new { @class = "btn btn-primary btn-sm" }) 
+                @Html.ActionLink("Delete", "Delete", new { id = item.ClubId }, new { @class = "btn btn-danger btn-sm" })
+            </td>
+        </tr>
+    }
 
 </table>

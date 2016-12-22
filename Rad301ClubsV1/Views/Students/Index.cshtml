@@ -1,27 +1,39 @@
-﻿@model IEnumerable<Rad301ClubsV1.Models.ClubModel.Student>
+﻿@using PagedList.Mvc
+@*@model IEnumerable<Rad301ClubsV1.Models.ClubModel.Student>*@
+@model PagedList.IPagedList<Rad301ClubsV1.Models.ClubModel.Student>
 
 @{
     ViewBag.Title = "Index";
 }
 
 <h2>Index</h2>
-<form method="get">
+@using (Html.BeginForm("Index", "Students", FormMethod.Get, new { @class = "form-inline" }))
+{
+    @Html.Label("search", "First Name or Second: ", new { @class = "control-label" })
+    @Html.TextBox("search", ViewBag.CurrentSearch as string, new { @class = "form-control" })
+    <input type="submit" value="Search" class="btn btn-default" />
+}
+@*<form method="get">
     <label>First Name</label>
     <input type="search" name="Firstname" value=@ViewBag.VFname />
     <label>Surname</label>
     <input type="search" name="Surname" value="@ViewBag.VSname" />
     <input type="submit" name="Search by Surname" />
-</form>
+</form>*@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Fname)
+            @*@Html.DisplayNameFor(model => model.Fname)*@
+            @Html.ActionLink("First Name", "Index", new { sort = ViewBag.FnameSort, serch = ViewBag.CurrentSearch})
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Sname)
+            @*@Html.DisplayNameFor(model => model.Sname)*@
+            @Html.ActionLink("Second Name", "Index", new { sort = ViewBag.SnameSort, serch = ViewBag.CurrentSearch })
+
+
         </th>
         <th></th>
     </tr>
@@ -43,3 +55,5 @@
 }
 
 </table>
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page, sort = ViewBag.CurrentSort, search = ViewBag.CurrentSearch }))
